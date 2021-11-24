@@ -6,6 +6,7 @@
 #include "TLegend.h"
 #include "TStyle.h"
 #include "TROOT.h"
+#include "TPad.h"
 
 #include <iostream>
 #include <vector>
@@ -18,10 +19,16 @@ void SetHist(TH1* h,TString titx, TString tity);
 void SavePNGandEPS(TCanvas** arrayCan, Int_t nobr);
 
 Int_t Draw(){
-	
+	gROOT->Reset();
 	map<Int_t, Int_t> trigRanges = {{6, 7}, {12, 20}, {20, 30}};
 	
-	map<Int_t, vector<TH1D*>> histomap = {{6, {}}, {12, {}}, {20, {}}};
+	map<Int_t, vector<TH1D>> histomap;
+	histomap[6];
+	histomap[12];
+	histomap[20];
+	for (auto& item : histomap) {
+		item.second.resize(5);
+	}
 	
 	//MAP OF HISTOGRAMS
 	//KEY: TT = 
@@ -39,48 +46,51 @@ Int_t Draw(){
 	//0 = DELTA RECOIL FOR PP AT 6-7 && 12-20
 	//1 = DELTA RECOIL FOR OO AT 6-7 && 12-20
 	//2 = RATIO OF DELTA RECOIL FOR PP AND OO AT 6-7 && 12-20
-	
 	TString name = "";
-	
-	for (const auto& item : trigRanges){
+	for (const pair<const int, const int>& item : trigRanges){
 		Int_t ttLow = item.first;
 		name = Form("../TT-%d_%d/Res_tt_%d.root", ttLow, trigRanges.at(ttLow), ttLow);
 		TFile *f11 = TFile::Open(name,"READ");
 		if(!f11) return 20; 
 
 		//READ Xsect HISTOGRAM 
-		name = Form("hTT_MB_PartLevel_tt_%d", ttLow);
-		TH1D*  RJSp_Xs = (TH1D*) f11->Get(name);
-		histomap.at(ttLow).push_back(RJSp_Xs->Clone());
+		name = Form("fhRecoilJetPt_MB_PartLevel_tt_%d", ttLow);
+		TH1D*  RJSp_Xs0 = (TH1D*) f11->Get(name);
+		TH1D* RJSp_Xs = (TH1D*) RJSp_Xs0->Clone();
+		histomap.at(ttLow)[0] = (*RJSp_Xs);
 		if(!RJSp_Xs) return 21; 
 		f11->Close();
 
-		name = Form("../TT-%d_%d/Res_pois_tt_%d.root", ttLow);
+		name = Form("../TT-%d_%d/Res_pois_tt_%d.root", ttLow, trigRanges.at(ttLow), ttLow);
 		TFile *f12 = TFile::Open(name,"READ");
 		if(!f12) return 20; 
 
 		//READ counts pp HISTOGRAM 
 		name = Form("fhRecoilJetPt_pp_MB_PartLevel_tt_%d", ttLow);   
-		TH1D*  RJSp_Cpp = (TH1D*) f12->Get(name);
-		histomap.at(ttLow).push_back(RJSp_Cpp->Clone());
+		TH1D*  RJSp_Cpp0 = (TH1D*) f12->Get(name);
+		TH1D* RJSp_Cpp = (TH1D*) RJSp_Cpp0->Clone();
+		histomap.at(ttLow)[1] = (*RJSp_Cpp);
 		if(!RJSp_Cpp) return 21; 
 
 		//READ counts OO HISTOGRAM 
 		name = Form("fhRecoilJetPt_OO_MB_PartLevel_tt_%d", ttLow);   
-		TH1D*  RJSp_COO = (TH1D*) f12->Get(name);
-		histomap.at(ttLow).push_back(RJSp_COO->Clone());
-		if(!RJSp_COO) return 21; 
+		TH1D*  RJSp_COO0 = (TH1D*) f12->Get(name);
+		TH1D* RJSp_COO = (TH1D*) RJSp_COO0->Clone();
+		histomap.at(ttLow)[2] = (*RJSp_COO);
+		if(!RJSp_COO) return 21;
 
 		//READ normalized pp HISTOGRAM 
 		name = Form("fhRecoilJetPt_pp_MB_PartLevel_tt_%d", ttLow);   
-		TH1D*  RJSp_Npp = (TH1D*) f12->Get(name);
-		histomap.at(ttLow).push_back(RJSp_Npp->Clone());
+		TH1D*  RJSp_Npp0 = (TH1D*) f12->Get(name);
+		TH1D* RJSp_Npp = (TH1D*) RJSp_Npp0->Clone();
+		histomap.at(ttLow)[3] = (*RJSp_Npp);
 		if(!RJSp_Npp) return 21; 
 
 		//READ normalized OO HISTOGRAM 
 		name = Form("fhRecoilJetPt_OO_MB_PartLevel_tt_%d", ttLow);   
-		TH1D*  RJSp_NOO = (TH1D*) f12->Get(name);
-		histomap.at(ttLow).push_back(RJSp_NOO->Clone());
+		TH1D*  RJSp_NOO0 = (TH1D*) f12->Get(name);
+		TH1D* RJSp_NOO = (TH1D*) RJSp_NOO0->Clone();
+		histomap.at(ttLow)[4] = (*RJSp_NOO);
 		if(!RJSp_NOO) return 21; 
 		f12->Close();
 	}
@@ -92,16 +102,33 @@ Int_t Draw(){
 	//READ Delta recoil 6-7 && 12-20 HISTOGRAM for pp 
 	name = Form("Delta_RecoilJetPt_pp_MB_PartLevel_tt_6-7_tt_12-20");
 	TH1D*  DRJSp_pp_612 = (TH1D*) f13->Get(name);
-	DRhisto.push_back(DRJSp_pp_612->Clone());
+	DRhisto.push_back(DRJSp_pp_612);
 	if(!DRJSp_pp_612) return 21; 
 	
 	//READ Delta recoil 6-7 && 12-20 HISTOGRAM for OO
 	name = Form("Delta_RecoilJetPt_OO_MB_PartLevel_tt_6-7_tt_12-20");
 	TH1D*  DRJSp_OO_612 = (TH1D*) f13->Get(name);
-	DRhisto.push_back(DRJSp_OO_612->Clone());
+	DRhisto.push_back(DRJSp_OO_612);
 	if(!DRJSp_OO_612) return 21; 
 	
+	TCanvas* c2 = new TCanvas("canv3", "canvas", 0., 0., 600., 800.);
+	c2->cd(0);
+	gPad->SetLogy();
+	DRJSp_pp_612->SetDirectory(0);
+	DRJSp_pp_612->SetLineColor(1);
+	DRJSp_pp_612->SetMarkerColor(1);
+	DRJSp_pp_612->Draw();
+	gPad->Modified(); 
+	gPad->Update();
+	DRJSp_OO_612->SetDirectory(0);
+	DRJSp_OO_612->SetLineColor(2);
+	DRJSp_OO_612->SetMarkerColor(2);
+	DRJSp_OO_612->Draw("same");
+	gPad->Modified(); 
+	gPad->Update();
+	
 	f13->Close();
+	
 	
 	
 	
@@ -141,17 +168,43 @@ Int_t Draw(){
 		SavePNGandEPS((TCanvas**) c, io);*/
 	
 	TCanvas* c = new TCanvas("canv1", "canvas", 0., 0., 600., 800.);
-	c->Divide(5,5);
+	c->Divide(3,5);
 	c->cd(1);
 	int i = 1;
-	for (const auto& item: histomap) {
-		for (const auto& graph: item.second){
+	for (auto& item: histomap) {
+		for (auto& graph: item.second){
+			TH1D* GraphToPlot = (TH1D*) graph.Clone();
 			c->cd(i);
-			graph->Draw();
+			gPad->SetLogy();
+			GraphToPlot->Draw();
+			gPad->Modified(); 
+			gPad->Update();
 			i++;
+			//delete GraphToPlot;
 		}
 	}
-	
+	TCanvas* c1 = new TCanvas("canv2", "canvas", 0., 0., 600., 800.);
+	c1->cd(0);
+	gPad->SetLogy();
+	TH1D* GraphToPlot = (TH1D*)histomap.at(12).at(2).Clone();
+	GraphToPlot->SetMarkerColor(1);
+	GraphToPlot->SetLineColor(1);
+	GraphToPlot->Draw();
+	gPad->Modified(); 
+	gPad->Update();
+	TH1D* GraphToPlot2 = (TH1D*)histomap.at(6).at(2).Clone();
+	GraphToPlot2->SetMarkerColor(2);
+	GraphToPlot2->SetLineColor(2);
+	GraphToPlot2->Draw("same");
+	gPad->Modified(); 
+	gPad->Update();
+	TH1D* GraphToPlot3 = (TH1D*)histomap.at(20).at(2).Clone();
+	GraphToPlot3->SetMarkerColor(4);
+	GraphToPlot3->SetLineColor(4);
+	GraphToPlot3->Draw("same");
+	gPad->Modified(); 
+	gPad->Update();
+
 	
 		return 11;
 }
