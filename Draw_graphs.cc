@@ -7,6 +7,7 @@
 #include "TStyle.h"
 #include "TROOT.h"
 #include "TPad.h"
+#include "TPaveText.h"
 
 #include <iostream>
 #include <vector>
@@ -57,6 +58,7 @@ Int_t Draw(){
 		name = Form("fhRecoilJetPt_MB_PartLevel_tt_%d", ttLow);
 		TH1D*  RJSp_Xs0 = (TH1D*) f11->Get(name);
 		TH1D* RJSp_Xs = (TH1D*) RJSp_Xs0->Clone();
+		RJSp_Xs->SetDirectory(0);
 		histomap.at(ttLow)[0] = (*RJSp_Xs);
 		if(!RJSp_Xs) return 21; 
 		f11->Close();
@@ -69,6 +71,7 @@ Int_t Draw(){
 		name = Form("fhRecoilJetPt_pp_MB_PartLevel_tt_%d", ttLow);   
 		TH1D*  RJSp_Cpp0 = (TH1D*) f12->Get(name);
 		TH1D* RJSp_Cpp = (TH1D*) RJSp_Cpp0->Clone();
+		RJSp_Cpp->SetDirectory(0);
 		histomap.at(ttLow)[1] = (*RJSp_Cpp);
 		if(!RJSp_Cpp) return 21; 
 
@@ -76,20 +79,23 @@ Int_t Draw(){
 		name = Form("fhRecoilJetPt_OO_MB_PartLevel_tt_%d", ttLow);   
 		TH1D*  RJSp_COO0 = (TH1D*) f12->Get(name);
 		TH1D* RJSp_COO = (TH1D*) RJSp_COO0->Clone();
+		RJSp_COO->SetDirectory(0);
 		histomap.at(ttLow)[2] = (*RJSp_COO);
 		if(!RJSp_COO) return 21;
 
 		//READ normalized pp HISTOGRAM 
-		name = Form("fhRecoilJetPt_pp_MB_PartLevel_tt_%d", ttLow);   
+		name = Form("Norm_fhRecoilJetPt_pp_MB_PartLevel_tt_%d", ttLow);   
 		TH1D*  RJSp_Npp0 = (TH1D*) f12->Get(name);
 		TH1D* RJSp_Npp = (TH1D*) RJSp_Npp0->Clone();
+		RJSp_Npp->SetDirectory(0);
 		histomap.at(ttLow)[3] = (*RJSp_Npp);
 		if(!RJSp_Npp) return 21; 
 
 		//READ normalized OO HISTOGRAM 
-		name = Form("fhRecoilJetPt_OO_MB_PartLevel_tt_%d", ttLow);   
+		name = Form("Norm_fhRecoilJetPt_OO_MB_PartLevel_tt_%d", ttLow);   
 		TH1D*  RJSp_NOO0 = (TH1D*) f12->Get(name);
 		TH1D* RJSp_NOO = (TH1D*) RJSp_NOO0->Clone();
+		RJSp_NOO->SetDirectory(0);
 		histomap.at(ttLow)[4] = (*RJSp_NOO);
 		if(!RJSp_NOO) return 21; 
 		f12->Close();
@@ -114,6 +120,8 @@ Int_t Draw(){
 	TCanvas* c2 = new TCanvas("canv3", "canvas", 0., 0., 600., 800.);
 	c2->cd(0);
 	gPad->SetLogy();
+	gStyle->SetOptStat(0);
+	gStyle->SetOptFit(0);
 	DRJSp_pp_612->SetDirectory(0);
 	DRJSp_pp_612->SetLineColor(1);
 	DRJSp_pp_612->SetMarkerColor(1);
@@ -126,6 +134,11 @@ Int_t Draw(){
 	DRJSp_OO_612->Draw("same");
 	gPad->Modified(); 
 	gPad->Update();
+	TPaveText *t = new TPaveText(0.05, 0.93, 0.95, 1.0, "brNDC");
+	name = Form("MB #Delta_{recoil} histogram for pp and OO at TT p_{T} ranges %d-%d && %d-%d GeV/c", 
+						6, 7, 12, 20);
+	t->AddText(name);
+	t->Draw();
 	
 	f13->Close();
 	
@@ -183,7 +196,78 @@ Int_t Draw(){
 			//delete GraphToPlot;
 		}
 	}
-	TCanvas* c1 = new TCanvas("canv2", "canvas", 0., 0., 600., 800.);
+	
+	//DRAW XSECTION; SMEARED PP AND OO SPECTRA; NORMALIZED PP AND OO SPECTRA
+	vector<TCanvas*> canv_storage;
+	for (size_t pos = 0; pos < 5; pos++){
+		TString canv_name = Form("canvas_%ld", pos);
+		TCanvas* c1 = new TCanvas(canv_name, "canvas", 0., 0., 600., 600.);
+		
+		gPad->SetLogy();
+		TH1D* GraphToPlot = (TH1D*)histomap.at(6).at(pos).Clone();
+		GraphToPlot->SetMarkerColor(1);
+		GraphToPlot->SetLineColor(1);
+		gStyle->SetOptStat(0);
+		gStyle->SetOptFit(0);
+		GraphToPlot->Draw();
+		gPad->Modified(); 
+		gPad->Update();
+		
+		TH1D* GraphToPlot2 = (TH1D*)histomap.at(12).at(pos).Clone();
+		GraphToPlot2->SetMarkerColor(2);
+		GraphToPlot2->SetLineColor(2);
+		GraphToPlot2->Draw("same");
+		gPad->Modified(); 
+		gPad->Update();
+		
+		TH1D* GraphToPlot3 = (TH1D*)histomap.at(20).at(pos).Clone();
+		GraphToPlot3->SetMarkerColor(4);
+		GraphToPlot3->SetLineColor(4);
+		GraphToPlot3->Draw("same");
+		gPad->Modified(); 
+		gPad->Update();
+		
+		TPaveText *t = new TPaveText(0.05, 0.93, 0.95, 1.0, "brNDC");
+		switch (pos) {
+			case 0: { name = Form("MB recoil jets histogram (Xsection)");
+				break;}
+			case 1: { name = Form("MB recoil jets histogram for pp");
+				break;
+			}
+			case 2: { name = Form("MB recoil jets histogram for OO");
+				break;
+			}
+			case 3: { name = Form("Normalized per TT integral MB recoil jets histogram for pp");
+				break;
+			}
+			case 4: { name = Form("Normalized per TT integral MB recoil jets histogram for OO");
+				break;
+			}
+			default: { name = Form("Unknown histogram...");
+				break;
+			}
+		}
+		
+		t->AddText(name);
+		t->Draw();
+		
+		TLegend *leg;
+		leg = new TLegend(0.5,0.6,0.95,0.95," ","brNDC");
+		leg->SetFillStyle(0); leg->SetBorderSize(0); leg->SetTextSize(0.04);
+		//leg->AddEntry((TObject*) 0, "pp #sqrt{#it{s}} = 13 TeV","");
+		//leg->AddEntry((TObject*) 0, "anti-#it{k}_{T} #it{R} = 0.4","");
+		
+		leg->AddEntry((TObject*) GraphToPlot, "TT = 6-7 GeV/c","l");
+		leg->AddEntry((TObject*) GraphToPlot2, "TT = 12-20 GeV/c","l");
+		leg->AddEntry((TObject*) GraphToPlot3, "TT = 20-30 GeV/c","l");
+		
+		leg->Draw();
+		
+		canv_storage.push_back(c1);
+	}
+	
+	
+/*	TCanvas* c1 = new TCanvas("canv2", "canvas", 0., 0., 600., 800.);
 	c1->cd(0);
 	gPad->SetLogy();
 	TH1D* GraphToPlot = (TH1D*)histomap.at(12).at(2).Clone();
@@ -203,8 +287,7 @@ Int_t Draw(){
 	GraphToPlot3->SetLineColor(4);
 	GraphToPlot3->Draw("same");
 	gPad->Modified(); 
-	gPad->Update();
-
+	gPad->Update();*/
 	
 		return 11;
 }

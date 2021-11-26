@@ -88,5 +88,8 @@
 ./../../../MassiveProd/Draw_graphs_cc.so: /usr/local/include/TStyle.h
 ./../../../MassiveProd/Draw_graphs_cc.so: /usr/local/include/TColor.h
 ./../../../MassiveProd/Draw_graphs_cc.so: /usr/local/include/TROOT.h
+./../../../MassiveProd/Draw_graphs_cc.so: /usr/local/include/TPaveText.h
+./../../../MassiveProd/Draw_graphs_cc.so: /usr/local/include/TText.h
+./../../../MassiveProd/Draw_graphs_cc.so: /usr/local/include/TLine.h
 ./../../../MassiveProd/Draw_graphs_cc.so: /usr/local/include/RVersion.h /usr/local/include/RConfig.h /usr/local/include/TClass.h /usr/local/include/TDictAttributeMap.h /usr/local/include/TInterpreter.h /usr/local/include/TROOT.h /usr/local/include/TBuffer.h /usr/local/include/TMemberInspector.h /usr/local/include/TError.h /usr/local/include/RtypesImp.h /usr/local/include/TIsAProxy.h /usr/local/include/TFileMergeInfo.h /usr/local/include/TCollectionProxyInfo.h /usr/local/bin/rootcling
 Draw_graphs_cc__ROOTBUILDVERSION= 6.22/02

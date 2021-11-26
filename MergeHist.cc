@@ -15,6 +15,7 @@
 #include "TStyle.h"
 #include "TF1.h"
 #include "TPaveText.h"
+#include "TLegend.h"
 
 #include <vector>
 #include <map>
@@ -240,14 +241,14 @@ void Scaling(Int_t trigRangeLow){
 		
 		name = Form("fhRecoilJetPt_OO_%s_PartLevel_tt_%d", trg[ig].Data(), trigRangeLow);
 		hpt = Scaler(hpt, name, factorOO);
-		name = Form("%s recoil jets histogram for OO at %d GeV/c; p_{T}, GeV/c; Counts", trg[ig].Data(), trigRangeLow);
+		name = Form("Unsmeared %s recoil jets histogram for OO at %d GeV/c; p_{T}, GeV/c; Counts", trg[ig].Data(), trigRangeLow);
 		hpt->SetTitle(name);
 		hpt->Write();
 		
 
 		name = Form("fhRecoilJetPt_pp_%s_PartLevel_tt_%d", trg[ig].Data(), trigRangeLow);
 		hpt_pp = Scaler(hpt_pp, name, luminosity_pp);
-		name = Form("%s recoil jets histogram for pp at %d GeV/c; p_{T}, GeV/c; Counts", trg[ig].Data(), trigRangeLow);
+		name = Form("Unsmeared %s recoil jets histogram for pp at %d GeV/c; p_{T}, GeV/c; Counts", trg[ig].Data(), trigRangeLow);
 		hpt_pp->SetTitle(name);
 		hpt_pp->Write();
 
@@ -314,7 +315,7 @@ void DoPoisSmearing(Int_t trigRangeLow){
 
 			name = Form("fhRecoilJetPt_%s_%s_PartLevel_tt_%d", RType[ij].Data(), trg[ig].Data(), trigRangeLow);
 			Pois_hist_RJ[ig] = MakePois(f1, name);
-			name = Form("%s recoil jets histogram for %s at %d GeV/c; p_{T}, GeV/c; Counts", RType[ij].Data(), trg[ig].Data(), trigRangeLow);
+			name = Form("%s recoil jets histogram for %s at %d GeV/c; p_{T}, GeV/c; Counts", trg[ig].Data(), RType[ij].Data(), trigRangeLow);
 			Pois_hist_RJ[ig]->SetTitle(name);
 			Pois_hist_RJ[ig]->Write();
 		
@@ -326,7 +327,7 @@ void DoPoisSmearing(Int_t trigRangeLow){
 			TH1D* NormHist = (TH1D*) Pois_hist_RJ[ig]->Clone();
 			NormHist->SetName(name);
 			NormHist->Scale(1/integral);
-			name = Form("%s normalized per TT recoil jets histogram for %s at %d GeV/c; p_{T}, GeV/c; Counts", trg[ig].Data(), RType[ij].Data(), trigRangeLow);
+			name = Form("%s normalized per TT recoil jets histogram for %s at %d GeV/c; p_{T}, GeV/c; Normalized per TT yield", trg[ig].Data(), RType[ij].Data(), trigRangeLow);
 			NormHist->SetTitle(name);
 			NormHist->Write();
 			
@@ -408,6 +409,9 @@ vector<TH1D*> MakeVectorHist(vector<TH1D*>& hist_vector, TString name, const Int
 			Scaled_hpt->Scale(1/integr_1[ig]);
 			name = Form("Scaled_RecoilJetPt_%s_%s_PartLevel_tt_%d", RType[ij].Data(), trg[ig].Data(), trigRangeLow_1);
 			Scaled_hpt->SetName(name);
+			name = Form("%s normalized per TT recoil jets histogram for %s at %d GeV/c; p_{T}, GeV/c; Normalized per TT yield", trg[ig].Data(), RType[ij].Data(), trigRangeLow_1);
+			Scaled_hpt->SetTitle(name);
+			
 			
 			name_newFile = Form("../TT-%d_%d/Normalized_by_tt_%d.root", trigRangeLow_1, trigRanges.at(trigRangeLow_1), trigRangeLow_1);
 			nfile = TFile::Open(name_newFile, "UPDATE");
@@ -466,13 +470,14 @@ void MakeDeltaRecoilSp(const Int_t& trigRangeLow_1, const Int_t& trigRangeLow_2)
 	ScRJ_2_graph->SetDirectory(0);
 	ScRJ_2_graph->SetLineColor(2);
 	ScRJ_2_graph->SetMarkerColor(2);
-	TCanvas* c = new TCanvas("canv1", "canvas", 0., 0., 600., 800.);
-	c->cd();
-	gPad->SetLogy();
-	(*ScRJ_1_graph).Draw();
-	(*ScRJ_2_graph).Draw("same");
-	gPad->Modified(); 
-	gPad->Update();
+	//vector<TCanvas*> canv_vector;
+	//TCanvas* c = new TCanvas("canv1", "canvas", 0., 0., 600., 800.);
+	//c->cd();
+	//gPad->SetLogy();
+	//(*ScRJ_1_graph).Draw();
+	//(*ScRJ_2_graph).Draw("same");
+	//gPad->Modified(); 
+	//gPad->Update();
 
 		
 	name = Form("../TT-%d_%d/Normalized_by_tt_%d.root", trigRangeLow_1, trigRanges.at(trigRangeLow_1), trigRangeLow_1);
@@ -500,6 +505,14 @@ void MakeDeltaRecoilSp(const Int_t& trigRangeLow_1, const Int_t& trigRangeLow_2)
 			TH1D* DeltaRecoil = (TH1D*) ScRJ_1->Clone();
 			DeltaRecoil->Add(ScRJ_1, ScRJ_2, -1, 1);
 			DeltaRecoil->SetName(name);
+			name = Form("%s #Delta_{recoil} histogram for %s at TT p_{T} ranges %d-%d && %d-%d GeV/c; p_{T}, GeV/c; Normalized per TT yield", trg[ig].Data(), 
+						RType[ij].Data(),
+						trigRangeLow_1, 
+						trigRanges.at(trigRangeLow_1), 
+						trigRangeLow_2, 
+						trigRanges.at(trigRangeLow_2));
+			DeltaRecoil->SetTitle(name);
+			
 
 			name = Form("../DeltaRecoil_tt_%d-%d_tt_%d-%d.root", trigRangeLow_1, trigRanges.at(trigRangeLow_1), trigRangeLow_2, trigRanges.at(trigRangeLow_2));
 			outFile = TFile::Open(name, "UPDATE");
@@ -522,7 +535,6 @@ void MakeDeltaRecoilSp(const Int_t& trigRangeLow_1, const Int_t& trigRangeLow_2)
 	func->SetParNames("Constant", "Slope", "Shift");
 	func->SetParLimits(0, 1e-2, 1e-1);
 	func->FixParameter(2, 0.);
-	//TCanvas* c1 = new TCanvas("c1", "canvas", 800, 600);
 	
 	name = Form("../DeltaRecoil_tt_%d-%d_tt_%d-%d.root", trigRangeLow_1, trigRanges.at(trigRangeLow_1), trigRangeLow_2, trigRanges.at(trigRangeLow_2));
 	outFile = TFile::Open(name, "UPDATE");
@@ -534,12 +546,12 @@ void MakeDeltaRecoilSp(const Int_t& trigRangeLow_1, const Int_t& trigRangeLow_2)
 					trigRangeLow_2,
 					trigRanges.at(trigRangeLow_2));
 	TH1D* DRJ_pp = (TH1D*) outFile->Get(name);
-	DRJ_pp->SetTitle(name);
+	//DRJ_pp->SetTitle(name);
 	DRJ_pp->SetMarkerColor(2);
 	DRJ_pp->SetLineColor(2);
 	
 	cout << "For pp: " << endl;
-	DRJ_pp->Fit("expoconst","R","",20.,50.);
+	DRJ_pp->Fit("expoconst","R0","",20.,50.);
 	
 	TF1 *fit_pp = DRJ_pp->GetFunction("expoconst");
 	Double_t chi2_fit_pp = fit_pp->GetChisquare();
@@ -554,7 +566,7 @@ void MakeDeltaRecoilSp(const Int_t& trigRangeLow_1, const Int_t& trigRangeLow_2)
 						trigRangeLow_2,
 						trigRanges.at(trigRangeLow_2));
 	TH1D* DRJ_OO = (TH1D*) outFile->Get(name);
-	DRJ_OO->SetTitle(name);
+	//DRJ_OO->SetTitle(name);
 	DRJ_OO->SetMarkerColor(1);
 	DRJ_OO->SetLineColor(1);
 	func->FixParameter(0, const_fit);
@@ -562,6 +574,12 @@ void MakeDeltaRecoilSp(const Int_t& trigRangeLow_1, const Int_t& trigRangeLow_2)
 	func->ReleaseParameter(2);
 	//TH1D* gs = (TH1D*) DRJ_OO->Clone();
 	DRJ_OO->Fit("expoconst","NR","",20.,50.);
+	
+	/*TF1* fitres = DRJ_OO->GetFunction("expoconst");
+	Double_t fit_slope = fitres->GetParameter(1);
+	Double_t fit_shift = fitres->GetParameter(2);
+	Double_t fit_shift_err = fitres->GetParError(2);
+	//Double_t calc_rat = TMath::Exp(-fit_shift/fit_slope);*/
 
 	
 	TCanvas* c1 = new TCanvas("canv2", "canvas2", 0., 0., 600., 800.);
@@ -571,19 +589,80 @@ void MakeDeltaRecoilSp(const Int_t& trigRangeLow_1, const Int_t& trigRangeLow_2)
 	DRJ_pp->SetDirectory(0);
 	(*DRJ_OO).Draw();
 	(*DRJ_pp).Draw("same");
-	gStyle->SetOptFit(111);
+	gStyle->SetOptStat(0);
+	gStyle->SetOptFit(0);
 	//gs->Draw("same");
 	gPad->Modified(); 
 	gPad->Update();
 	
-	THStack* DRJ_stack = new THStack("Histogram stack","");
-	DRJ_stack->Add(DRJ_OO);
-	DRJ_stack->Add(DRJ_pp);
-	DRJ_stack->Write();
+	TPaveText *t = new TPaveText(0.05, 0.93, 0.95, 1.0, "brNDC");
+	name = Form("MB #Delta_{recoil} histogram for pp and OO at TT p_{T} ranges %d-%d && %d-%d GeV/c", 
+						trigRangeLow_1, 
+						trigRanges.at(trigRangeLow_1), 
+						trigRangeLow_2, 
+						trigRanges.at(trigRangeLow_2));
+	t->AddText(name);
+	t->Draw();
+	
+	TLegend *leg;
+	leg = new TLegend(0.5,0.6,0.95,0.95," ","brNDC");
+	leg->SetFillStyle(0); leg->SetBorderSize(0); leg->SetTextSize(0.02);
+	leg->AddEntry((TObject*) 0, "TT range = 6-7 && 12-20 GeV","");
+	//leg->AddEntry((TObject*) 0, "anti-#it{k}_{T} #it{R} = 0.4","");
+	leg->AddEntry((TObject*) DRJ_OO, "OO","l");
+	leg->AddEntry((TObject*) DRJ_pp, "pp","l");
+	
+	leg->Draw();
+	
+	TCanvas* c2 = new TCanvas("canv_recoil ratio", "Recoil ratio", 0., 0., 600., 600.);
+	c2->cd(0);
+	
+	TH1D* DRJ_ratio = new TH1D("DRJ_ratio", "see on pad", 200, -20, 180);
+	DRJ_ratio->SetDirectory(0);
+	DRJ_ratio->SetName("ratio");
+	DRJ_ratio->Divide(DRJ_OO, DRJ_pp, 1, 1);
+	DRJ_ratio->SetMarkerColor(4);
+	DRJ_ratio->SetLineColor(4);
+	
+	TF1* const_form = new TF1("const_form", "[0]", 0, 180);
+	const_form->SetParName(0, "Ratio value");
+	DRJ_ratio->Fit("const_form", "NR", "" , 20, 50);
+	
+	TF1* min_const_form = new TF1("min_const_form", "1-[0]", 0, 180);
+	min_const_form->SetParName(0, "Shift of ratio from 1");
+	DRJ_ratio->Fit("min_const_form", "NR", "" , 20, 50);
+	
+	TF1* const_form_exp = new TF1("const_form_1", "exp(-[0]/[1])", 0, 180);
+	const_form_exp->SetParName(0, "Shift");
+	const_form_exp->SetParName(1, "Slope");
+	const_form_exp->FixParameter(1, slope);
+	DRJ_ratio->Fit("const_form_1", "NR", "" , 20, 50);
+	/*TF1* fitres_ratio = DRJ_ratio->GetFunction("const_form");
+	Double_t fit_ratio = fitres_ratio->GetParameter(0);
+	//cout << endl << "Calculated ratio: " << calc_rat << endl;
+	cout << endl << "Calculated ratio: " << fit_ratio << endl;*/
+	
+	gPad->SetLogy();
+	//DRJ_ratio->SetDirectory(0);
+	DRJ_ratio->Draw();
+	gStyle->SetOptStat(0);
+	gStyle->SetOptFit(0);
+	gPad->Modified(); 
+	gPad->Update();
+	TPaveText *t2 = new TPaveText(0.05, 0.93, 0.95, 1.0, "brNDC");
+	name = Form("#Delta_{recoil, OO}/#Delta_{recoil, pp} histograms ratio at TT p_{T} ranges %d-%d && %d-%d GeV/c", 
+						trigRangeLow_1, 
+						trigRanges.at(trigRangeLow_1), 
+						trigRangeLow_2, 
+						trigRanges.at(trigRangeLow_2));
+	t2->AddText(name);
+	t2->Draw();
+	
+	
+	
 	outFile->Close();
 	
 	delete func;
-	delete DRJ_stack;
 }
 
 
