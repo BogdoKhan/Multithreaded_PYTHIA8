@@ -194,7 +194,7 @@ T Scaler(T histo, TString& name, const Double_t& factor){
 	return histo;
 }
 
-void Scaling(Int_t trigRangeLow){
+void Scaling(Int_t trigRangeLow, Double_t luminosity_OO){
 	name = Form("Res_tt_%d.root", trigRangeLow);
 	TFile* f1 = TFile::Open(name, "UPDATE");
 	name = Form("Res_scaled_tt_%d.root", trigRangeLow);
@@ -204,7 +204,8 @@ void Scaling(Int_t trigRangeLow){
 	//pp-luminosities: 3 pb^-1 = 3e9 mb^-1
 	//OO-luminosities: 0.5 nb^-1; 1 nb^-1; 2nb^-1; 4nb^-1;
 	//Xsection for OO-collisions: A(O) = 16; Xs(OO) = Xs(pp)*A^2;
-	Double_t luminosity = 4e6; //4 nb^-1 -> 4e6 mb^-1;
+	//Double_t luminosity = 4e6; //4 nb^-1 -> 4e6 mb^-1;
+	Double_t luminosity = luminosity_OO;
 	Double_t luminosity_pp = 3e9;
 	Int_t A = 16; //oxygen mass in amu
 	Double_t factorOO = A * A * luminosity;
@@ -628,7 +629,7 @@ void MakeDeltaRecoilSp(const Int_t& trigRangeLow_1, const Int_t& trigRangeLow_2)
 	const_form->SetParName(0, "Ratio value");
 	DRJ_ratio->Fit("const_form", "NR", "" , 20, 50);
 	
-	TF1* min_const_form = new TF1("min_const_form", "1-[0]", 0, 180);
+	TF1* min_const_form = new TF1("min_const_form", "1+[0]", 0, 180);
 	min_const_form->SetParName(0, "Shift of ratio from 1");
 	DRJ_ratio->Fit("min_const_form", "NR", "" , 20, 50);
 	
