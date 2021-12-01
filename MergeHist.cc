@@ -17,6 +17,8 @@
 #include "TPaveText.h"
 #include "TLegend.h"
 
+#include "SaveImg.h"
+
 #include <vector>
 #include <map>
 #include <iostream>
@@ -27,9 +29,10 @@ using std::endl;
 using namespace std; 
 
 int GetSummarySpectrum(const Int_t& seed, const Int_t& TTLow);
-void Scaling(Int_t trigRangeLow);
+void Scaling(Int_t trigRangeLow, Double_t luminosity_OO);
 void DoPoisSmearing(Int_t trigRangeLow);
 void MakeDeltaRecoilSp(const Int_t& trigRangeLow_1, const Int_t& trigRangeLow_2);
+void SavePNGandEPS(TCanvas* mycanv, bool isEPS);
 
 //int GetSummarySpectrum(const Int_t& seed, const Int_t& TTLow)
 //void Scaling(Int_t trigRangeLow)
@@ -348,7 +351,8 @@ void DoPoisSmearing(Int_t trigRangeLow){
 	histo_pp->SetMarkerColor(1);
 	histo_pp->SetLineColor(1);
 	
-	TCanvas* c = new TCanvas("canv1", "canvas", 0., 0., 600., 800.);
+	name = Form("canv_norm_per_TT_%d", trigRangeLow);
+	TCanvas* c = new TCanvas("canv_norm_per_TT", name, 0., 0., 600., 800.);
 	c->cd();
 	gPad->SetLogy();
 	histo_OO->Draw();
@@ -360,6 +364,7 @@ void DoPoisSmearing(Int_t trigRangeLow){
 	name = Form("MB normalized per TT recoil jets histogram for OO and pp at %d GeV/c", trigRangeLow);
 	t->AddText(name);
 	t->Draw();
+	SavePNGandEPS(c, 0); //save as image
 	
 	outFile->Close();
 }
@@ -582,8 +587,8 @@ void MakeDeltaRecoilSp(const Int_t& trigRangeLow_1, const Int_t& trigRangeLow_2)
 	Double_t fit_shift_err = fitres->GetParError(2);
 	//Double_t calc_rat = TMath::Exp(-fit_shift/fit_slope);*/
 
-	
-	TCanvas* c1 = new TCanvas("canv2", "canvas2", 0., 0., 600., 800.);
+	name = Form("canv_delta_recoils_rng_%d-%d", trigRangeLow_1, trigRangeLow_2);
+	TCanvas* c1 = new TCanvas("canv_delta_recoils", name, 0., 0., 600., 800.);
 	c1->cd();
 	gPad->SetLogy();
 	DRJ_OO->SetDirectory(0);
@@ -615,7 +620,10 @@ void MakeDeltaRecoilSp(const Int_t& trigRangeLow_1, const Int_t& trigRangeLow_2)
 	
 	leg->Draw();
 	
-	TCanvas* c2 = new TCanvas("canv_recoil ratio", "Recoil ratio", 0., 0., 600., 600.);
+	SavePNGandEPS(c1, 0);
+	
+	name = Form("ratio_delta_recoil_rng_%d-%d", trigRangeLow_1, trigRangeLow_2);
+	TCanvas* c2 = new TCanvas("canv_recoil_ratio", name, 0., 0., 600., 600.);
 	c2->cd(0);
 	
 	TH1D* DRJ_ratio = new TH1D("DRJ_ratio", "see on pad", 200, -20, 180);
@@ -659,12 +667,10 @@ void MakeDeltaRecoilSp(const Int_t& trigRangeLow_1, const Int_t& trigRangeLow_2)
 	t2->AddText(name);
 	t2->Draw();
 	
+	SavePNGandEPS(c2, 0);
 	
 	
 	outFile->Close();
 	
 	delete func;
 }
-
-
-

@@ -9,6 +9,8 @@
 #include "TPad.h"
 #include "TPaveText.h"
 
+#include "SaveImg.h"
+
 #include <iostream>
 #include <vector>
 using namespace std;
@@ -17,7 +19,7 @@ using std::endl;
 
 void SetCanvas(TCanvas* c);
 void SetHist(TH1* h,TString titx, TString tity);
-void SavePNGandEPS(TCanvas** arrayCan, Int_t nobr);
+void SavePNGandEPS(TCanvas* mycanv, bool isEPS);
 
 Int_t Draw(){
 	gROOT->Reset();
@@ -117,7 +119,8 @@ Int_t Draw(){
 	DRhisto.push_back(DRJSp_OO_612);
 	if(!DRJSp_OO_612) return 21; 
 	
-	TCanvas* c2 = new TCanvas("canv3", "canvas", 0., 0., 600., 800.);
+	name = Form("MB_delta_recoil_TT_%d_%d", 6, 12);
+	TCanvas* c2 = new TCanvas("MB_delta_recoil_canv", name, 0., 0., 600., 800.);
 	c2->cd(0);
 	gPad->SetLogy();
 	gStyle->SetOptStat(0);
@@ -139,7 +142,7 @@ Int_t Draw(){
 						6, 7, 12, 20);
 	t->AddText(name);
 	t->Draw();
-	
+	SavePNGandEPS(c2, 0);
 	f13->Close();
 	
 	
@@ -180,7 +183,8 @@ Int_t Draw(){
 		//Print out commands for figure printout in terminal
 		SavePNGandEPS((TCanvas**) c, io);*/
 	
-	TCanvas* c = new TCanvas("canv1", "canvas", 0., 0., 600., 800.);
+	name = "canvas_total_graphs";
+	TCanvas* c = new TCanvas("canvas_total_graphs", name, 0., 0., 600., 800.);
 	c->Divide(3,5);
 	c->cd(1);
 	int i = 1;
@@ -196,7 +200,7 @@ Int_t Draw(){
 			//delete GraphToPlot;
 		}
 	}
-	
+	SavePNGandEPS(c, 0);
 	//DRAW XSECTION; SMEARED PP AND OO SPECTRA; NORMALIZED PP AND OO SPECTRA
 	vector<TCanvas*> canv_storage;
 	for (size_t pos = 0; pos < 5; pos++){
@@ -247,7 +251,7 @@ Int_t Draw(){
 				break;
 			}
 		}
-		
+		c1->SetTitle(name);
 		t->AddText(name);
 		t->Draw();
 		
@@ -262,7 +266,7 @@ Int_t Draw(){
 		leg->AddEntry((TObject*) GraphToPlot3, "TT = 20-30 GeV/c","l");
 		
 		leg->Draw();
-		
+		SavePNGandEPS(c1, 0);
 		canv_storage.push_back(c1);
 	}
 	
@@ -322,29 +326,5 @@ void SetCanvas(TCanvas* c){
 
 
 //_____________________________________________________________________
-
-
-void SavePNGandEPS(TCanvas** arrayCan, Int_t nobr){
-
-   cout<<endl<<endl<<endl;
-   //PNG IMAGES
-   gROOT->ProcessLine("TImage *img = TImage::Create();");
-   for(int j=0; j<nobr;j++){
-      TString nameBase =arrayCan[j]->GetTitle();
-      if(nameBase.BeginsWith("x")) continue;
-      TString namePNG = nameBase + ".png";
-      TString OutImg = "img->FromPad(" + (TString) (arrayCan[j]->GetName()) + "); img->WriteImage(\"./Results/" + namePNG.Data() + "\");";
-	  gROOT->ProcessLine(OutImg);
-   }
-/*
-   //EPS IMAGES
-   for(int j=0; j<nobr;j++){
-      TString nameBase =arrayCan[j]->GetTitle();
-      if(nameBase.BeginsWith("x")) continue;
-      TString nameEPS = nameBase + ".eps";
-      cout<<arrayCan[j]->GetName()<<"->SaveAs(\""<<nameEPS.Data()<<"\");"<<endl;
-   }
-*/
-}
 
 
