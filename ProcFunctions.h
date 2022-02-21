@@ -9,6 +9,18 @@
 #include "TPad.h"
 #include "TPaveText.h"
 
+//THREAD-SAFE RANDOM NUMBER GENERATOR FOR PYTHIA SEED
+
+#if defined (_MSC_VER)  // Visual studio
+    #define thread_local __declspec( thread )
+#elif defined (__GCC__) // GCC
+    #define thread_local __thread
+#endif
+
+#include <random>
+#include <time.h>
+#include <thread>
+
 #include <sys/stat.h>
 #include <iostream>
 
@@ -16,6 +28,7 @@ using namespace std;
 
 void SavePNGandEPS(TCanvas* mycanv, bool isEPS);
 void MakeDir(const string& dirpath, const string& dirname);
+int intRand(const int & min, const int & max, vector<mt19937*>& gens);
 
 void SavePNGandEPS(TCanvas* mycanv, bool isEPS){
 	MakeDir("../", "Images");
@@ -46,3 +59,12 @@ void MakeDir(const string& dirpath, const string& dirname){
 	} 
 }
 
+int intRand(const int & min, const int & max, vector<mt19937*>& gens) {
+	mutex addGen_excl;
+    static thread_local mt19937* generator = nullptr;
+    if (!generator) generator = new mt19937(clock() + std::hash<std::thread::id>()(std::this_thread::get_id()));
+    uniform_int_distribution<int> distribution(min, max);
+	lock_guard<mutex> lock_Gen(addGen_excl);
+	gens.push_back(generator);
+    return distribution(*generator);
+}

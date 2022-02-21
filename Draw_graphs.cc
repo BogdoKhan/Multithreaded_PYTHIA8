@@ -9,7 +9,7 @@
 #include "TPad.h"
 #include "TPaveText.h"
 
-#include "SaveImg.h"
+#include "ProcFunctions.h"
 
 #include <iostream>
 #include <vector>
@@ -19,7 +19,7 @@ using std::endl;
 
 void SetCanvas(TCanvas* c);
 void SetHist(TH1* h,TString titx, TString tity);
-void SavePNGandEPS(TCanvas* mycanv, bool isEPS);
+//void SavePNGandEPS(TCanvas* mycanv, bool isEPS);
 
 Int_t Draw(){
 	gROOT->Reset();
@@ -120,7 +120,7 @@ Int_t Draw(){
 	if(!DRJSp_OO_612) return 21; 
 	
 	name = Form("MB_delta_recoil_TT_%d_%d", 6, 12);
-	TCanvas* c2 = new TCanvas("MB_delta_recoil_canv", name, 0., 0., 600., 800.);
+	TCanvas* c2 = new TCanvas("MB_delta_recoil_canv", name, 0., 0., 1000., 800.);
 	c2->cd(0);
 	gPad->SetLogy();
 	gStyle->SetOptStat(0);
@@ -137,11 +137,20 @@ Int_t Draw(){
 	DRJSp_OO_612->Draw("same");
 	gPad->Modified(); 
 	gPad->Update();
+	
 	TPaveText *t = new TPaveText(0.05, 0.93, 0.95, 1.0, "brNDC");
 	name = Form("MB #Delta_{recoil} histogram for pp and OO at TT p_{T} ranges %d-%d && %d-%d GeV/c", 
 						6, 7, 12, 20);
 	t->AddText(name);
 	t->Draw();
+	
+	TLegend *leg_T1;
+	leg_T1 = new TLegend(0.4,0.6,0.95,0.95," ","brNDC");
+	leg_T1->SetFillStyle(0); leg_T1->SetBorderSize(0); leg_T1->SetTextSize(0.03);
+	leg_T1->AddEntry((TObject*) DRJSp_OO_612, "OO","l");
+	leg_T1->AddEntry((TObject*) DRJSp_pp_612, "pp","l");
+	leg_T1->Draw();
+	
 	SavePNGandEPS(c2, 0);
 	f13->Close();
 	
@@ -184,7 +193,7 @@ Int_t Draw(){
 		SavePNGandEPS((TCanvas**) c, io);*/
 	
 	name = "canvas_total_graphs";
-	TCanvas* c = new TCanvas("canvas_total_graphs", name, 0., 0., 600., 800.);
+	TCanvas* c = new TCanvas("canvas_total_graphs", name, 0., 0., 1000., 1000.);
 	c->Divide(3,5);
 	c->cd(1);
 	int i = 1;
@@ -205,7 +214,7 @@ Int_t Draw(){
 	vector<TCanvas*> canv_storage;
 	for (size_t pos = 0; pos < 5; pos++){
 		TString canv_name = Form("canvas_%ld", pos);
-		TCanvas* c1 = new TCanvas(canv_name, "canvas", 0., 0., 600., 600.);
+		TCanvas* c1 = new TCanvas(canv_name, "canvas", 0., 0., 1000., 800.);
 		
 		gPad->SetLogy();
 		TH1D* GraphToPlot = (TH1D*)histomap.at(6).at(pos).Clone();

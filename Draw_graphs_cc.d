@@ -85,6 +85,6 @@
 ./../../../MassiveProd/Draw_graphs_cc.so: /home/danikch/root/include/TROOT.h
 ./../../../MassiveProd/Draw_graphs_cc.so: /home/danikch/root/include/TPaveText.h
 ./../../../MassiveProd/Draw_graphs_cc.so: /home/danikch/root/include/TText.h
-./../../../MassiveProd/Draw_graphs_cc.so: /home/danikch/work/Results/286200/TT-6_7/./../../../MassiveProd/SaveImg.h
+./../../../MassiveProd/Draw_graphs_cc.so: /home/danikch/work/Results/286200/TT-6_7/./../../../MassiveProd/ProcFunctions.h
 ./../../../MassiveProd/Draw_graphs_cc.so: /home/danikch/root/include/RVersion.h /home/danikch/root/include/RConfig.h /home/danikch/root/include/TClass.h /home/danikch/root/include/TDictAttributeMap.h /home/danikch/root/include/TInterpreter.h /home/danikch/root/include/TROOT.h /home/danikch/root/include/TBuffer.h /home/danikch/root/include/TMemberInspector.h /home/danikch/root/include/TError.h /home/danikch/root/include/RtypesImp.h /home/danikch/root/include/TIsAProxy.h /home/danikch/root/include/TFileMergeInfo.h /home/danikch/root/include/TCollectionProxyInfo.h /home/danikch/root/bin/rootcling
 Draw_graphs_cc__ROOTBUILDVERSION= 6.24/04
