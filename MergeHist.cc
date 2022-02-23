@@ -214,6 +214,7 @@ void Scaling(Int_t trigRangeLow, Double_t luminosity_OO){
 	Double_t luminosity_pp = 3e9;
 	Int_t A = 16; //oxygen mass in amu
 	Double_t factorOO = A * A * luminosity;
+	Double_t factor_pO = A * luminosity;
 
 	Double_t integral = 0;
 
@@ -221,7 +222,9 @@ void Scaling(Int_t trigRangeLow, Double_t luminosity_OO){
 		name = Form("hTT_%s_PartLevel_tt_%d", trg[ig].Data(), trigRangeLow);
 		TH1D* htt = (TH1D*) f1->Get(name);
 		TH1D* htt_pp = (TH1D*) htt->Clone();
+		TH1D* htt_pO = (TH1D*) htt->Clone();
 
+//OO
 		name = Form("hTT_OO_%s_PartLevel_tt_%d", trg[ig].Data(), trigRangeLow);
 		htt = Scaler(htt, name, factorOO);
 		name = Form("%s trigger tracks histogram for OO at %d GeV/c; p_{T}, GeV/c; Counts", trg[ig].Data(), trigRangeLow);
@@ -231,7 +234,7 @@ void Scaling(Int_t trigRangeLow, Double_t luminosity_OO){
 		integral = htt->Integral()/factorOO;
 		cout << "OO " << integral << endl;
 
-
+//pp
 		name = Form("hTT_pp_%s_PartLevel_tt_%d", trg[ig].Data(), trigRangeLow);
 		htt_pp = Scaler(htt_pp, name, luminosity_pp);
 		name = Form("%s trigger tracks histogram for pp at %d GeV/c; p_{T}, GeV/c; Counts", trg[ig].Data(), trigRangeLow);
@@ -240,10 +243,20 @@ void Scaling(Int_t trigRangeLow, Double_t luminosity_OO){
 		integral = htt_pp->Integral()/luminosity_pp;
 		cout << "pp " << integral << endl;
 
+//pO
+		name = Form("hTT_pO_%s_PartLevel_tt_%d", trg[ig].Data(), trigRangeLow);
+		htt_pO = Scaler(htt_pO, name, factor_pO);
+		name = Form("%s trigger tracks histogram for pO at %d GeV/c; p_{T}, GeV/c; Counts", trg[ig].Data(), trigRangeLow);
+		htt_pO->SetTitle(name);
+		htt_pO->Write();
+		integral = htt_pO->Integral()/factor_pO;
+		cout << "pO " << integral << endl;
+
 
 		name = Form("fhRecoilJetPt_%s_PartLevel_tt_%d", trg[ig].Data(), trigRangeLow);
 		TH1D* hpt = (TH1D*) f1->Get(name);
 		TH1D* hpt_pp = (TH1D*) hpt->Clone();
+		TH1D* hpt_pO = (TH1D*) hpt->Clone();
 
 		name = Form("fhRecoilJetPt_OO_%s_PartLevel_tt_%d", trg[ig].Data(), trigRangeLow);
 		hpt = Scaler(hpt, name, factorOO);
@@ -257,6 +270,12 @@ void Scaling(Int_t trigRangeLow, Double_t luminosity_OO){
 		name = Form("Unsmeared %s recoil jets histogram for pp at %d GeV/c; p_{T}, GeV/c; Counts", trg[ig].Data(), trigRangeLow);
 		hpt_pp->SetTitle(name);
 		hpt_pp->Write();
+
+		name = Form("fhRecoilJetPt_pO_%s_PartLevel_tt_%d", trg[ig].Data(), trigRangeLow);
+		hpt_pO = Scaler(hpt_pO, name, factor_pO);
+		//name = Form("Unsmeared %s recoil jets histogram for pO at %d GeV/c; p_{T}, GeV/c; Counts", trg[ig].Data(), trigRangeLow);
+		hpt_pO->SetTitle("; p_{T}, GeV/c; Counts");
+		hpt_pO->Write();
 
 
 		name = Form("fhRecoilJetPhi_%s_PartLevel_tt_%d", trg[ig].Data(), trigRangeLow);

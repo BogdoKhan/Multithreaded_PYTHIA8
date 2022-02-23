@@ -1,13 +1,18 @@
 #include "MergeHist.cc"
 
 void TunesHistos(){
+
+	//-----PART 1: READ FILES WITH RAW DATA---------
+	//these files are from PYTHIA8 pp simulations
+	//at 5.02 & 6.37 TeV
+	//-------------TUNE 5-------------------------
 	name = Form("5_502_Res_scaled_tt_6.root");
 	TFile *inFile0 = new TFile(name, "READ");
 
 	name = Form("tunes.root");
 	TFile *outFile = new TFile(name, "RECREATE");
 	outFile->cd();
-
+//-------------------------5.02 TeV---------------
 	name = Form("hTT_pp_MB_PartLevel_tt_6");
 	TH1D* htt_5502 = (TH1D*) inFile0->Get(name);
 	name = Form("5_502_hTT_pp_MB_PartLevel_tt_6");
@@ -40,12 +45,15 @@ void TunesHistos(){
 	hpt_5502_1->Write();
 	//inFile1->Close();
 	//----------------------------------------
+	//BUILD PER TT NORMALIZED SPECTRUM FOR 5.02 TeV
 	TH1D* nhpt_5502 = (TH1D*) hpt_5502->Clone("5_502_NRJ_pp");
 	nhpt_5502->Add(hpt_5502_1, hpt_5502, 1, -1);
 	name = Form("5_502_NRJ_pp");
 	nhpt_5502->SetTitle(name);
 	nhpt_5502->Write();
+
 	//------------------------------------------
+	//-------------------6.35 TeV---------------
 	name = Form("5_635_Res_scaled_tt_6.root");
 	TFile *inFile2 = new TFile(name, "READ");
 	outFile->cd();
@@ -82,22 +90,28 @@ void TunesHistos(){
 	hpt_5635_1->Write();
 	//inFile3->Close();
 	//------------------------------
+	//BUILD PER TT NORMALIZED SPECTRUM FOR 6.37 TeV
 	TH1D* nhpt_5635 = (TH1D*) hpt_5635->Clone("5_635_NRJ_pp");
 	nhpt_5635->Add(hpt_5635_1, hpt_5635, 1, -1);
 	name = Form("5_635_NRJ_pp");
 	nhpt_5635->SetTitle(name);
 	nhpt_5635->Write();
 	//------------------------------------------
+	//BUILD DELTA_RECOIL SPECTRUM 6.37/5.02
 	TH1D* dnhpt_5 = (TH1D*) hpt_5635->Clone("5_DNRJ_pp");
 	dnhpt_5->Divide(nhpt_5635, nhpt_5502, 1, 1);
 	name = Form("5_DNRJ_pp");
 	dnhpt_5->SetTitle(name);
 	dnhpt_5->Write();
+
 	//------------------------------------------
+	//-------------TUNE 14----------------------
+	//------------------------------------------
+
 	name = Form("14_502_Res_scaled_tt_6.root");
 	TFile *inFile4 = new TFile(name, "READ");
 	outFile->cd();
-
+	//------------------5.02 TeV----------------
 	name = Form("hTT_pp_MB_PartLevel_tt_6");
 	TH1D* htt_14502 = (TH1D*) inFile4->Get(name);
 	name = Form("14_502_hTT_pp_MB_PartLevel_tt_6");
@@ -130,12 +144,15 @@ void TunesHistos(){
 	hpt_14502_1->Write();
 	//inFile5->Close();
 	//--------------------------------------------
+	//BUILD PER TT NORMALIZED SPECTRUM FOR 5.02 TeV
 	TH1D* nhpt_14502 = (TH1D*) hpt_14502->Clone("14_502_NRJ_pp");
 	nhpt_14502->Add(hpt_14502_1, hpt_14502, 1, -1);
 	name = Form("14_502_NRJ_pp");
 	nhpt_14502->SetTitle(name);
 	nhpt_14502->Write();
+
 	//------------------------------------------
+	//-------------6.37 TeV---------------------
 	name = Form("14_635_Res_scaled_tt_6.root");
 	TFile *inFile6 = new TFile(name, "READ");
 	outFile->cd();
@@ -171,23 +188,30 @@ void TunesHistos(){
 	hpt_14635_1 = Scaler(hpt_14635_1, name, 1/integral);
 	hpt_14635_1->Write();
 	//inFile7->Close();
+
 	//---------------------------------
+	//BUILD PER TT NORMALIZED SPECTRUM FOR 6.37 TeV
 	TH1D* nhpt_14635 = (TH1D*) hpt_14635->Clone("14_635_NRJ_pp");
 	nhpt_14635->Add(hpt_14635_1, hpt_14635, 1, -1);
 	name = Form("14_635_NRJ_pp");
 	nhpt_14635->SetTitle(name);
 	nhpt_14635->Write();
 	//------------------------------------------
+	//BUILD DELTA_RECOIL SPECTRUM 6.37/5.02
 	TH1D* dnhpt_14 = (TH1D*) hpt_14635->Clone("14_DNRJ_pp");
 	dnhpt_14->Divide(nhpt_14635, nhpt_14502, 1, 1);
 	name = Form("14_DNRJ_pp");
 	dnhpt_14->SetTitle(name);
 	dnhpt_14->Write();
+
+
+	//------------------------------------------
+	//------------------TUNE 21-----------------
 	//------------------------------------------
 	name = Form("21_502_Res_scaled_tt_6.root");
 	TFile *inFile8 = new TFile(name, "READ");
 	outFile->cd();
-
+//-----------------5.02 TeV------------------
 	name = Form("hTT_pp_MB_PartLevel_tt_6");
 	TH1D* htt_21502 = (TH1D*) inFile8->Get(name);
 	name = Form("21_502_hTT_pp_MB_PartLevel_tt_6");
@@ -220,12 +244,14 @@ void TunesHistos(){
 	hpt_21502_1->Write();
 	//inFile9->Close();
 	//----------------------------------
+	//BUILD PER TT NORMALIZED SPECTRUM FOR 5.02 TeV
 	TH1D* nhpt_21502 = (TH1D*) hpt_21502->Clone("21_502_NRJ_pp");
 	nhpt_21502->Add(hpt_21502_1, hpt_21502, 1, -1);
 	name = Form("21_502_NRJ_pp");
 	nhpt_21502->SetTitle(name);
 	nhpt_21502->Write();
 	//------------------------------------------
+	//-------------------6.37 TeV---------------
 	name = Form("21_635_Res_scaled_tt_6.root");
 	TFile *inFile10 = new TFile(name, "READ");
 	outFile->cd();
@@ -262,12 +288,14 @@ void TunesHistos(){
 	hpt_21635_1->Write();
 	//inFile11->Close();
 	//-----------------------------
+	//BUILD PER TT NORMALIZED SPECTRUM FOR 6.37 TeV
 	TH1D* nhpt_21635 = (TH1D*) hpt_21635->Clone("21_635_NRJ_pp");
 	nhpt_21635->Add(hpt_21635_1, hpt_21635, 1, -1);
 	name = Form("21_635_NRJ_pp");
 	nhpt_21635->SetTitle(name);
 	nhpt_21635->Write();
 	//------------------------------------------
+	//BUILD DELTA_RECOIL 6.37/5.02
 	TH1D* dnhpt_21 = (TH1D*) hpt_21635->Clone("21_DNRJ_pp");
 	dnhpt_21->Divide(nhpt_21635, nhpt_21502, 1, 1);
 	name = Form("21_DNRJ_pp");
@@ -275,16 +303,58 @@ void TunesHistos(){
 	dnhpt_21->Write();
 	//------------------------------------------
 
+//-----------------OO AS SHIFT REFERENCE------------
+//We take 14 Monash tune simulation results scaled by OO luminosity
+//2 pb^-1 as a reference for our fits
+	//------------------------------------------
+	name = Form("14_OO_Res_scaled_tt_6.root");
+	TFile *inFileO4 = new TFile(name, "READ");
+	outFile->cd();
 
-	//dnhpt_5 nhpt_14502
-	//dnhpt_14
-	//dnhpt_21
-	//outFile->Close();
+	name = Form("hTT_pp_MB_PartLevel_tt_6");
+	TH1D* htt_14OO = (TH1D*) inFileO4->Get(name);
+	name = Form("14_OO_hTT_pp_MB_PartLevel_tt_6");
+	htt_14OO->SetTitle(name);
+	integral = htt_14OO->Integral();
 
+	name = Form("fhRecoilJetPt_pp_MB_PartLevel_tt_6");
+	TH1D* hpt_14OO = (TH1D*) inFileO4->Get(name);
+	name = Form("14_OO_RJ_pp_MB_PartLevel_tt_6");
+	hpt_14OO->SetTitle(name);
+	hpt_14OO = Scaler(hpt_14OO, name, 1/integral);
+	hpt_14OO->Write();
+	//inFile4->Close();
+	//----------------------------------------
+	name = Form("14_OO_Res_scaled_tt_12.root");
+	TFile *inFileO5 = new TFile(name, "READ");
+	outFile->cd();
+
+	name = Form("hTT_pp_MB_PartLevel_tt_12");
+	TH1D* htt_14OO_1 = (TH1D*) inFileO5->Get(name);
+	name = Form("14_OO_hTT_pp_MB_PartLevel_tt_12");
+	htt_14OO_1->SetTitle(name);
+	integral = htt_14OO_1->Integral();
+
+	name = Form("fhRecoilJetPt_pp_MB_PartLevel_tt_12");
+	TH1D* hpt_14OO_1 = (TH1D*) inFileO5->Get(name);
+	name = Form("14_OO_RJ_pp_MB_PartLevel_tt_12");
+	hpt_14OO_1->SetTitle(name);
+	hpt_14OO_1 = Scaler(hpt_14OO_1, name, 1/integral);
+	hpt_14OO_1->Write();
+	//inFile5->Close();
+	//--------------------------------------------
+	TH1D* nhpt_14OO = (TH1D*) hpt_14OO->Clone("14_OO_NRJ_pp");
+	nhpt_14OO->Add(hpt_14OO_1, hpt_14OO, 1, -1);
+	name = Form("14_OO_NRJ_pp");
+	nhpt_14OO->SetTitle(name);
+	nhpt_14OO->Write();
+
+//linear tune approximation function
 	TF1* lintune = new TF1("lintune", "[0] + x * [1]", 0, 180);
 	lintune->SetParameters(0.9, 0.002);
 	lintune->SetParNames("Constant", "Slope");
 
+//build canvas with Delta_recoil spectra & fit curves
 	name = Form("Tunes");
 	TCanvas* c2 = new TCanvas("MB_delta_recoil_canv", name, 0., 0., 1000., 800.);
 	c2->cd(0);
@@ -295,11 +365,12 @@ void TunesHistos(){
 	dnhpt_5->SetLineColor(1);
 	dnhpt_5->SetMarkerColor(1);
 
+//...for tune 5
 	dnhpt_5->SetTitle("");
 	dnhpt_5->GetXaxis()->SetTitle("#it{p}_{T,jet}^{ch}");
     dnhpt_5->GetYaxis()->SetTitle("#frac{#Delta_{recoil_tune_{i}}^{6.37}}{#Delta_{recoil_tune_{i}}^{5.02}}  ");
 	dnhpt_5->GetXaxis()->SetRangeUser(20., 50.);
-	dnhpt_5->GetYaxis()->SetRangeUser(0.9, 1.15);
+	dnhpt_5->GetYaxis()->SetRangeUser(0.85, 1.2);//Y axis range
 	dnhpt_5->Draw();
 	gPad->Modified();
 	gPad->Update();
@@ -310,6 +381,7 @@ void TunesHistos(){
 	gPad->Modified();
 	gPad->Update();
 
+//tune 14
 	dnhpt_14->SetDirectory(0);
 	dnhpt_14->SetLineColor(2);
 	dnhpt_14->SetMarkerColor(2);
@@ -323,7 +395,7 @@ void TunesHistos(){
 	gPad->Modified();
 	gPad->Update();
 
-
+//tune 21
 	dnhpt_21->SetDirectory(0);
 	dnhpt_21->SetLineColor(3);
 	dnhpt_21->SetMarkerColor(3);
@@ -347,13 +419,16 @@ void TunesHistos(){
 
 	SavePNGandEPS(c2, 0);
 
+//exponential decaying function with shift for fit
 	TF1* func = new TF1("expoconst", appr_func, 0, 180, 3);
 	func->SetParameters(1e-2, 2e1, 0.);
 	func->SetParNames("Constant", "Slope", "Shift");
 	func->SetParLimits(0, 1e-2, 1);
 	func->FixParameter(2, 0.);
 
-
+//create canvas for exponential functions
+//here 14 tune spectrum at 5.02 TeV is scaled by prevoius fits
+//for different tunes, leading to "calculated 6.37 spectrum"
 	TCanvas* c4 = new TCanvas("MBd", "mbd", 0., 0., 1000., 800.);
 	c4->cd(0);
 
@@ -379,11 +454,11 @@ void TunesHistos(){
 	shpt_21->GetXaxis()->SetRangeUser(20., 50.);
 	shpt_21->Write();
 
-
-	cout << "======================TUNE 14 base=======================" << endl;
-	nhpt_14502->Fit("expoconst","R","",20.,50.);
+//reference OO spectrum @ 6.37 TeV, Monash tune, 2 pb^-1
+	cout << "======================TUNE 14 OO base=======================" << endl;
+	nhpt_14OO->Fit("expoconst","R","",20.,50.);
 	//shpt_14->Fit("expoconst","R","",20.,50.);
-	TF1* fit_pl = nhpt_14502->GetFunction("expoconst");
+	TF1* fit_pl = nhpt_14OO->GetFunction("expoconst");
 	Double_t const1 = fit_pl->GetParameter(0);
 	Double_t slope = fit_pl->GetParameter(1);
 	func->FixParameter(0, const1);
