@@ -74,3 +74,4 @@ pO/
 tunes/
 tunes_pO/
 *.tar.gz
+*.root

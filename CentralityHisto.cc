@@ -1,6 +1,11 @@
 #include "MergeHist.cc"
 
 void MakeMuliplicitiesHistos(){
+	gStyle->SetPadTopMargin(0.05);
+	gStyle->SetPadBottomMargin(0.15);
+	gStyle->SetPadLeftMargin(0.15);
+	gStyle->SetPadRightMargin(0.05);
+
 	name = Form("../TT-12_20/Res_scaled_tt_12.root");
 	TFile *inFile = new TFile(name, "READ");
 
@@ -14,7 +19,7 @@ void MakeMuliplicitiesHistos(){
 
 	name = Form("Peri_hTT_OO_MB_PartLevel_tt_12");
 	htt_low = Scaler(htt_low, name, 0.5);
-	name = Form("Peripheral low multiplicity trigger tracks histogram for OO at GeV/c; p_{T}, GeV/c; Counts");
+	name = Form("Peripheral low multiplicity trigger tracks histogram for OO at GeV/c; p_{T}, #frac{GeV}{#it{c}}; Counts");
 	htt_low->SetTitle(name);
 
 	htt_low->Write();
@@ -22,7 +27,7 @@ void MakeMuliplicitiesHistos(){
 
 	name = Form("Central_hTT_OO_MB_PartLevel_tt_12");
 	htt_high = Scaler(htt_high, name, 0.2);
-	name = Form("Central high multiplicity trigger tracks histogram for pp at GeV/c; p_{T}, GeV/c; Counts");
+	name = Form("Central high multiplicity trigger tracks histogram for pp at GeV/c; p_{T}, #frac{GeV}{#it{c}}; Counts");
 	htt_high->SetTitle(name);
 	htt_high->Write();
 	Double_t integral_high = htt_high->Integral();
@@ -34,27 +39,27 @@ void MakeMuliplicitiesHistos(){
 
 	name = Form("Peri_fhRecoilJetPt_OO_MB_PartLevel_tt_12");
 	hpt_low = Scaler(hpt_low, name, 0.5);
-	name = Form("Unsmeared peripheral Low-50p recoil jets histogram for OO at 12 GeV/c; p_{T}, GeV/c; Counts");
+	name = Form("Unsmeared peripheral Low-50p recoil jets histogram for OO at 12 GeV/c; p_{T}, #frac{GeV}{#it{c}}; Counts");
 	hpt_low->SetTitle(name);
 	hpt_low->Write();
 
 	name = Form("Central_fhRecoilJetPt_pp_MB_PartLevel_tt_12");
 	hpt_high = Scaler(hpt_high, name, 0.2);
-	name = Form("Unsmeared central High-20p recoil jets histogram for pp at 12 GeV/c; p_{T}, GeV/c; Counts");
+	name = Form("Unsmeared central High-20p recoil jets histogram for pp at 12 GeV/c; p_{T}, #frac{GeV}{#it{c}}; Counts");
 	hpt_high->SetTitle(name);
 	hpt_high->Write();
 
 	TH1D* hptpl = MakePois(outFile, "Peri_fhRecoilJetPt_OO_MB_PartLevel_tt_12");
 	name = Form("Peri_fhRecoilJetPt_OO_MB_PartLevel_tt_12");
 	hptpl->SetName(name);
-	name = Form("Peripheral recoil jets histogram for OO at 12-20 GeV/c; p_{T}, GeV/c; Counts");
+	name = Form("Peripheral recoil jets histogram for OO at 12-20 GeV/c; p_{T}, #frac{GeV}{#it{c}}; Counts");
 	hptpl->SetTitle(name);
 	hptpl->Write();
 
 	TH1D* hptph = MakePois(outFile, "Central_fhRecoilJetPt_pp_MB_PartLevel_tt_12");
 	name = Form("Central_fhRecoilJetPt_pp_MB_PartLevel_tt_12");
 	hptph->SetName(name);
-	name = Form("Central recoil jets histogram for OO at 12-20 GeV/c; p_{T}, GeV/c; Counts");
+	name = Form("Central recoil jets histogram for OO at 12-20 GeV/c; p_{T}, #frac{GeV}{#it{c}}; Counts");
 	hptph->SetTitle(name);
 	hptph->Write();
 
@@ -70,7 +75,7 @@ void MakeMuliplicitiesHistos(){
 	Scaled_hptpl->Scale(1/integral_low);
 	name = Form("Scaled_low_RecoilJetPt_PartLevel_tt_12-20");
 	Scaled_hptpl->SetName(name);
-	name = Form("Peripheral normalized per TT recoil jets histogram at 12-20 GeV/c; p_{T}, GeV/c; Normalized per TT yield");
+	name = Form("Peripheral normalized per TT recoil jets histogram at 12-20 GeV/c; #it{p}_{T,jet}^{ch}, #frac{GeV}{#it{c}}; Normalized per TT yield");
 	Scaled_hptpl->SetTitle(name);
 	Scaled_hptpl->Write();
 	Scaled_hptpl->Fit("expoconst","R0","",20.,50.);
@@ -86,7 +91,7 @@ void MakeMuliplicitiesHistos(){
 	Scaled_hptph->Scale(1/integral_high);
 	name = Form("Scaled_high_RecoilJetPt_PartLevel_tt_12-20");
 	Scaled_hptph->SetName(name);
-	name = Form("Central normalized per TT recoil jets histogram at 12-20 GeV/c; p_{T}, GeV/c; Normalized per TT yield");
+	name = Form("Central normalized per TT recoil jets histogram at 12-20 GeV/c; #it{p}_{T,jet}^{ch}, #frac{GeV}{#it{c}}; Normalized per TT yield");
 	Scaled_hptph->SetTitle(name);
 	Scaled_hptph->Write();
 
@@ -95,7 +100,7 @@ void MakeMuliplicitiesHistos(){
 	TH1D* hptratio = new TH1D("MRJ_ratio", "", 200, -20, 180);
 	hptratio->SetDirectory(0);
 	hptratio->SetName("Centrality_ratio");
-	name = Form("Centrality ratio recoil jets histogram at 12-20 GeV/c; p_{T}, GeV/c; Ratio, arb.units");
+	name = Form("Centrality ratio recoil jets histogram at 12-20 GeV/c; #it{p}_{T,jet}^{ch}, #frac{GeV}{#it{c}}; Ratio, arb.units");
 	hptratio->SetTitle("");
 	hptratio->GetXaxis()->SetRangeUser(20.,50.);
 
@@ -120,9 +125,10 @@ void MakeMuliplicitiesHistos(){
 	cr1->cd(0);
 	gStyle->SetOptStat(0);
 	gStyle->SetOptFit(0);
-	hptratio->GetXaxis()->SetTitle("#it{p}_{T,jet}^{ch}");
-    hptratio->GetYaxis()->SetTitle("#frac{#Delta_{recoil}^{central}}{#Delta_{recoil}^{peripheral}}");
+	hptratio->GetXaxis()->SetTitle("#it{p}_{T,jet}^{ch}, #frac{GeV}{#it{c}}");
+    hptratio->GetYaxis()->SetTitle("#frac{#Delta_{recoil}^{central}(#it{p}_{T,jet}^{ch})}{#Delta_{recoil}^{peripheral}(#it{p}_{T,jet}^{ch})}");
 	//#left[#font[122]{-} #frac{#bar{#it{s}}}{#it{b}}#right]}
+	hptratio->SetTitleOffset(1.7, "xy");
 	hptratio->Draw();
 
 

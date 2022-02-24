@@ -2,6 +2,12 @@
 
 void TunesHistos(){
 
+	gStyle->SetPadTopMargin(0.05);
+	gStyle->SetPadBottomMargin(0.15);
+	gStyle->SetPadLeftMargin(0.15);
+	gStyle->SetPadRightMargin(0.05);
+
+
 	//-----PART 1: READ FILES WITH RAW DATA---------
 	//these files are from PYTHIA8 pp simulations
 	//at 5.02 & 6.37 TeV
@@ -454,7 +460,7 @@ void TunesHistos(){
 	shpt_21->GetXaxis()->SetRangeUser(20., 50.);
 	shpt_21->Write();
 
-//reference OO spectrum @ 6.37 TeV, Monash tune, 2 pb^-1
+//reference OO spectrum @ 6.37 TeV, Monash tune, 2 nb^-1
 	cout << "======================TUNE 14 OO base=======================" << endl;
 	nhpt_14OO->Fit("expoconst","R","",20.,50.);
 	//shpt_14->Fit("expoconst","R","",20.,50.);
@@ -497,7 +503,7 @@ void TunesHistos(){
 	leg_T2->AddEntry((TObject*) fit21, "Tune 21","l");
 	leg_T2->Draw();
 
-	shpt_14->GetXaxis()->SetTitle("#it{p}_{T,jet}^{ch}");
-    shpt_14->GetYaxis()->SetTitle("#Delta_{recoil, tune_{i}}^{6.37 TeV}, (GeV/c)^{-1}");
+	shpt_14->GetXaxis()->SetTitle("#it{p}_{T,jet}^{ch}, #frac{GeV}{#it{c}}");
+    shpt_14->GetYaxis()->SetTitle("#Delta_{recoil, tune_{i}}^{6.37 TeV}(#it{p}_{T,jet}^{ch}), #left( #frac{GeV}{#it{c}} #right)^{-1}");
 	shpt_14->SetTitle("");
 }

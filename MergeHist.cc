@@ -18,6 +18,7 @@
 #include "TLegend.h"
 #include "TArrow.h"
 #include "TLine.h"
+#include "TGraph.h"
 
 #include <sstream>
 #include <string>
@@ -170,9 +171,9 @@ int GetSummarySpectrum(const Int_t& seed, const Int_t& TTLow){
 	outFile->cd();
 
 	for(Int_t ig = kMB; ig<kTRIG; ig++){
-		name = Form("%s trigger tracks histogram (Xsection) at %d GeV/c; p_{T}, GeV/c; #sigma, mb", trg[ig].Data(), trigRangeLow);
+		name = Form("; p_{T}, GeV/c; #sigma, mb");
 		fhTTHPartLevel[ig]->SetTitle(name);
-		name = Form("%s recoil jets histogram (Xsection) at %d GeV/c; p_{T}, GeV/c; #sigma, mb", trg[ig].Data(), trigRangeLow);
+		name = Form("; p_{T}, GeV/c; #sigma, mb");
 		fhRecoilJetPtTTH_PartLevel[ig]->SetTitle(name);
 		name = Form("%s RJ #phi histogram at %d GeV/c", trg[ig].Data(), trigRangeLow);
 		fhRecoilJetPhiTTH_PartLevel[ig]->SetTitle(name);
@@ -200,6 +201,10 @@ T Scaler(T histo, TString& name, const Double_t& factor){
 }
 
 void Scaling(Int_t trigRangeLow, Double_t luminosity_OO){
+	gStyle->SetPadTopMargin(0.05);
+	gStyle->SetPadBottomMargin(0.15);
+	gStyle->SetPadLeftMargin(0.15);
+	gStyle->SetPadRightMargin(0.05);
 	name = Form("Res_tt_%d.root", trigRangeLow);
 	TFile* f1 = TFile::Open(name, "UPDATE");
 	name = Form("Res_scaled_tt_%d.root", trigRangeLow);
@@ -227,7 +232,7 @@ void Scaling(Int_t trigRangeLow, Double_t luminosity_OO){
 //OO
 		name = Form("hTT_OO_%s_PartLevel_tt_%d", trg[ig].Data(), trigRangeLow);
 		htt = Scaler(htt, name, factorOO);
-		name = Form("%s trigger tracks histogram for OO at %d GeV/c; p_{T}, GeV/c; Counts", trg[ig].Data(), trigRangeLow);
+		name = Form("; #it{p}_{T,jet}^{ch}, #frac{GeV}{#it{c}}; Counts");
 		htt->SetTitle(name);
 
 		htt->Write();
@@ -237,7 +242,7 @@ void Scaling(Int_t trigRangeLow, Double_t luminosity_OO){
 //pp
 		name = Form("hTT_pp_%s_PartLevel_tt_%d", trg[ig].Data(), trigRangeLow);
 		htt_pp = Scaler(htt_pp, name, luminosity_pp);
-		name = Form("%s trigger tracks histogram for pp at %d GeV/c; p_{T}, GeV/c; Counts", trg[ig].Data(), trigRangeLow);
+		name = Form("; #it{p}_{T,jet}^{ch}, #frac{GeV}{#it{c}}; Counts");
 		htt_pp->SetTitle(name);
 		htt_pp->Write();
 		integral = htt_pp->Integral()/luminosity_pp;
@@ -246,7 +251,7 @@ void Scaling(Int_t trigRangeLow, Double_t luminosity_OO){
 //pO
 		name = Form("hTT_pO_%s_PartLevel_tt_%d", trg[ig].Data(), trigRangeLow);
 		htt_pO = Scaler(htt_pO, name, factor_pO);
-		name = Form("%s trigger tracks histogram for pO at %d GeV/c; p_{T}, GeV/c; Counts", trg[ig].Data(), trigRangeLow);
+		name = Form("; #it{p}_{T,jet}^{ch}, #frac{GeV}{#it{c}}; Counts");
 		htt_pO->SetTitle(name);
 		htt_pO->Write();
 		integral = htt_pO->Integral()/factor_pO;
@@ -260,21 +265,21 @@ void Scaling(Int_t trigRangeLow, Double_t luminosity_OO){
 
 		name = Form("fhRecoilJetPt_OO_%s_PartLevel_tt_%d", trg[ig].Data(), trigRangeLow);
 		hpt = Scaler(hpt, name, factorOO);
-		name = Form("Unsmeared %s recoil jets histogram for OO at %d GeV/c; p_{T}, GeV/c; Counts", trg[ig].Data(), trigRangeLow);
+		name = Form("; #it{p}_{T,jet}^{ch}, #frac{GeV}{#it{c}}; Counts");
 		hpt->SetTitle(name);
 		hpt->Write();
 
 
 		name = Form("fhRecoilJetPt_pp_%s_PartLevel_tt_%d", trg[ig].Data(), trigRangeLow);
 		hpt_pp = Scaler(hpt_pp, name, luminosity_pp);
-		name = Form("Unsmeared %s recoil jets histogram for pp at %d GeV/c; p_{T}, GeV/c; Counts", trg[ig].Data(), trigRangeLow);
+		name = Form("; #it{p}_{T,jet}^{ch}, #frac{GeV}{#it{c}}; Counts");
 		hpt_pp->SetTitle(name);
 		hpt_pp->Write();
 
 		name = Form("fhRecoilJetPt_pO_%s_PartLevel_tt_%d", trg[ig].Data(), trigRangeLow);
 		hpt_pO = Scaler(hpt_pO, name, factor_pO);
 		//name = Form("Unsmeared %s recoil jets histogram for pO at %d GeV/c; p_{T}, GeV/c; Counts", trg[ig].Data(), trigRangeLow);
-		hpt_pO->SetTitle("; p_{T}, GeV/c; Counts");
+		hpt_pO->SetTitle("; #it{p}_{T,jet}^{ch}, #frac{GeV}{#it{c}}; Counts");
 		hpt_pO->Write();
 
 
@@ -310,6 +315,10 @@ TH1D* MakePois(TFile* f1, const TString& name) {
 }
 
 void DoPoisSmearing(Int_t trigRangeLow){
+	gStyle->SetPadTopMargin(0.05);
+	gStyle->SetPadBottomMargin(0.15);
+	gStyle->SetPadLeftMargin(0.15);
+	gStyle->SetPadRightMargin(0.05);
 	name = Form("Res_scaled_tt_%d.root", trigRangeLow);
 	TFile* f1 = TFile::Open(name, "READ");
 	name = Form("Res_pois_tt_%d.root", trigRangeLow);
@@ -334,14 +343,14 @@ void DoPoisSmearing(Int_t trigRangeLow){
 			//Pois_hist_TT[ig] = MakePois(f1, name);
 			TH1D* histo = (TH1D*) f1->Get(name);
 			Pois_hist_TT[ig] = (TH1D*) histo->Clone();
-			name = Form("%s trigger tracks histogram for %s at %d GeV/c; p_{T}, GeV/c; Counts", trg[ig].Data(), RType[ij].Data(), trigRangeLow);
+			name = Form("; #it{p}_{T,jet}^{ch}, #frac{GeV}{#it{c}}; Counts");
 			Pois_hist_TT[ig]->SetTitle(name);
 			Pois_hist_TT[ig]->Write();
 			integral = Pois_hist_TT[ig]->Integral();
 
 			name = Form("fhRecoilJetPt_%s_%s_PartLevel_tt_%d", RType[ij].Data(), trg[ig].Data(), trigRangeLow);
 			Pois_hist_RJ[ig] = MakePois(f1, name);
-			name = Form("%s recoil jets histogram for %s at %d GeV/c; p_{T}, GeV/c; Counts", trg[ig].Data(), RType[ij].Data(), trigRangeLow);
+			name = Form("; #it{p}_{T,jet}^{ch}, #frac{GeV}{#it{c}}; Counts");
 			Pois_hist_RJ[ig]->SetTitle(name);
 			Pois_hist_RJ[ig]->Write();
 
@@ -353,7 +362,7 @@ void DoPoisSmearing(Int_t trigRangeLow){
 			TH1D* NormHist = (TH1D*) Pois_hist_RJ[ig]->Clone();
 			NormHist->SetName(name);
 			NormHist->Scale(1/integral);
-			name = Form("%s normalized per TT recoil jets histogram for %s at %d GeV/c; p_{T}, GeV/c; Normalized per TT yield", trg[ig].Data(), RType[ij].Data(), trigRangeLow);
+			name = Form("; #it{p}_{T,jet}^{ch}, #frac{GeV}{#it{c}}; Normalized per TT yield");
 			NormHist->SetTitle(name);
 			NormHist->Write();
 
@@ -380,14 +389,15 @@ void DoPoisSmearing(Int_t trigRangeLow){
 	gStyle->SetOptStat(0);
 	gPad->SetLogy();
 	histo_OO->Draw();
+	histo_OO->SetTitleOffset(1.7, "x");
 	histo_pp->Draw("same");
 	gPad->Modified();
 	gPad->Update();
 
-	TPaveText *t = new TPaveText(0.05, 0.93, 0.95, 1.0, "brNDC");
-	name = Form("MB normalized per TT recoil jets histogram for OO and pp at %d GeV/c", trigRangeLow);
-	t->AddText(name);
-	t->Draw();
+	// TPaveText *t = new TPaveText(0.05, 0.93, 0.95, 1.0, "brNDC");
+	// name = Form("MB normalized per TT recoil jets histogram for OO and pp at %d GeV/c", trigRangeLow);
+	// t->AddText(name);
+	// t->Draw();
 
 	TLegend *leg_norm;
 	leg_norm = new TLegend(0.4,0.6,0.95,0.95," ","brNDC");
@@ -402,6 +412,10 @@ void DoPoisSmearing(Int_t trigRangeLow){
 }
 
 vector<TH1D*> MakeVectorHist(vector<TH1D*>& hist_vector, TString name, const Int_t& trigRangeLow_1){
+	gStyle->SetPadTopMargin(0.05);
+	gStyle->SetPadBottomMargin(0.15);
+	gStyle->SetPadLeftMargin(0.15);
+	gStyle->SetPadRightMargin(0.05);
 
 	map<Int_t, Int_t> trigRanges = {{6, 7}, {12, 20}, {20, 30}};
 
@@ -447,7 +461,7 @@ vector<TH1D*> MakeVectorHist(vector<TH1D*>& hist_vector, TString name, const Int
 			Scaled_hpt->Scale(1/integr_1[ig]);
 			name = Form("Scaled_RecoilJetPt_%s_%s_PartLevel_tt_%d", RType[ij].Data(), trg[ig].Data(), trigRangeLow_1);
 			Scaled_hpt->SetName(name);
-			name = Form("%s normalized per TT recoil jets histogram for %s at %d GeV/c; p_{T}, GeV/c; Normalized per TT yield", trg[ig].Data(), RType[ij].Data(), trigRangeLow_1);
+			name = Form("; #it{p}_{T,jet}^{ch}, #frac{GeV}{#it{c}}; Normalized per TT yield");
 			Scaled_hpt->SetTitle(name);
 
 
@@ -475,27 +489,87 @@ Double_t appr_func(Double_t* x, Double_t* par) {
 	return fitval;
 }
 
-
+void ScaleTG(Double_t c1, Option_t *option, TGraph* tg)
+{
+   TString opt = option; opt.ToLower();
+   if (opt.Contains("x")) {
+      for (Int_t i=0; i<tg->GetN(); i++)
+         tg->GetX()[i] *= c1;
+   }
+   if (opt.Contains("y")) {
+      for (Int_t i=0; i<tg->GetN(); i++)
+         tg->GetY()[i] *= c1;
+   }
+}
 
 void CalculateAQ(Double_t sigma) {
-	Double_t mean = 0;
+
+	gStyle->SetPadTopMargin(0.05);
+	gStyle->SetPadBottomMargin(0.15);
+	gStyle->SetPadLeftMargin(0.15);
+	gStyle->SetPadRightMargin(0.05);
+
+	Double_t mean = 0; //build gaussian with given sigma and 0 mean
 	Double_t cn = 1;
 	TCanvas* c = new TCanvas("canv_gaus", "gaus", 0., 0., 800., 800.);
-	 TF1 *g = new TF1("g","gaus",-sigma*10,sigma*10);
+	 TF1 *g = new TF1("g","gaus",-sigma*5,sigma*5);
 	g->SetParameters(cn, mean, sigma);
 	Int_t np = 100;
-	double* x = new double[np];
+	double* x = new double[np]; //calculation of integral under gaussian
 	double* w = new double[np];
-	Double_t stot = g->IntegralFast(np, x, w, -sigma*10, sigma*10);
+	Double_t stot = g->IntegralFast(np, x, w, -sigma*5, sigma*5);
 	Double_t si = 1;
 	Double_t bnd = 0.;
-	Double_t step = sigma/50000;
-	while (si/stot > 0.1) {
-		si = g->IntegralFast(np, x, w, bnd, sigma*10);
+	Double_t step = sigma/10000;
+	while (si/stot > 0.1) {	//step-by step evaluation of one-sided integral
+		si = g->IntegralFast(np, x, w, bnd, sigma*5);	//between moving boundary and gaussian right boundary
 		bnd += step;
 	}
-	cout << stot << " " << si << " " << si/stot << endl;
-	cout << "Boundary alpha: " << bnd << "; c: " << bnd/sigma << endl;
-	c->cd();
+	cout << stot << " " << si << " " << si/stot << endl; //total area under gaussian; area between AQ and
+	cout << "Boundary alpha: " << bnd << "; c: " << bnd/sigma << endl;//right boundary; their ratio ~ 0.1
+	c->cd();																													//abs value of boundary and in value of sigmas
+	g->SetTitle("; #it{p}_{T}, #frac{GeV}{#it{c}}; Gaussian value");
+	g->GetXaxis()->SetRange(-sigma*5, sigma*5);
+
 	g->Draw();
+	TF1* g1 = new TF1("g1", "gaus", -sigma*5, bnd);
+	g1->SetParameters(cn, mean, sigma);
+	g1->SetFillColor(kRed);
+//	g1->SetFillColorAlpha(0.3);
+	g1->SetFillStyle(3001);
+	g1->Draw("SAME FC");
+
+	TLine* unity = new TLine(bnd, 0., bnd, g->Eval(bnd));
+	unity->SetLineStyle(2);
+	unity->Draw("same");
+
+	TLegend *leg_1;
+	leg_1 = new TLegend(0.5,0.8,0.9,0.9," ","brNDC");
+	leg_1->SetFillStyle(0); leg_1->SetBorderSize(0); leg_1->SetTextSize(0.03);
+	leg_1->AddEntry((TObject*) 0, Form("Z(CL 90%%) = %.3f#sigma", bnd/sigma),"");
+	leg_1->AddEntry((TObject*) 0, Form("#alpha-quantile: %.3f GeV/c", bnd),"");
+	leg_1->Draw("same");
+	g->GetXaxis()->SetRangeUser(-5*sigma, 5*sigma);
+
+	TCanvas* c1 = new TCanvas("canv_gaus_CDF", "gaus_CDF", 0., 0., 800., 800.);
+	c1->cd();
+	TGraph* tg = ((TGraph*) g->DrawIntegral());
+	tg->SetTitle("; #it{p}_{T}, #frac{GeV}{#it{c}}; Gaussian CDF value");
+	ScaleTG(1/stot, "y", tg);
+	tg->GetXaxis()->SetRangeUser(-sigma*5, sigma*5);
+	tg->Draw();
+	TLine* unity_tg = new TLine(bnd, 0., bnd, tg->Eval(bnd));
+	unity_tg->SetLineStyle(2);
+	unity_tg->Draw("same");
+	TLine* val_tg = new TLine(-5*sigma, tg->Eval(bnd), bnd, tg->Eval(bnd));
+	val_tg->SetLineStyle(2);
+	val_tg->Draw("same");
+
+	TLegend *leg_2;
+	leg_2 = new TLegend(0.1,0.6,0.4,0.5," ","brNDC");
+	leg_2->SetFillStyle(0); leg_2->SetBorderSize(0); leg_2->SetTextSize(0.03);
+	leg_2->AddEntry((TObject*) 0, Form("Z(CL 90%%) = %.3f#sigma", bnd/sigma),"");
+	leg_2->AddEntry((TObject*) 0, Form("#alpha-quantile: %.3f GeV/c", bnd),"");
+	leg_2->Draw("same");
+
 }

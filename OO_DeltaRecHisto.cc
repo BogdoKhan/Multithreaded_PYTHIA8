@@ -2,6 +2,12 @@
 
 void MakeDeltaRecoilSp(const Int_t& trigRangeLow_1, const Int_t& trigRangeLow_2){
 	gROOT->Reset();
+
+	gStyle->SetPadTopMargin(0.05);
+	gStyle->SetPadBottomMargin(0.15);
+	gStyle->SetPadLeftMargin(0.15);
+	gStyle->SetPadRightMargin(0.05);
+
 	map<Int_t, Int_t> trigRanges = {{6, 7}, {12, 20}, {20, 30}};
 
 	vector<TH1D*> hist_vector = {};
@@ -60,7 +66,7 @@ void MakeDeltaRecoilSp(const Int_t& trigRangeLow_1, const Int_t& trigRangeLow_2)
 			TH1D* DeltaRecoil = (TH1D*) ScRJ_1->Clone();
 			DeltaRecoil->Add(ScRJ_1, ScRJ_2, -1, 1);
 			DeltaRecoil->SetName(name);
-			name = Form("%s #Delta_{recoil} histogram for %s at TT p_{T} ranges %d-%d && %d-%d GeV/c; p_{T}, GeV/c; Normalized per TT yield", trg[ig].Data(),
+			name = Form("%s #Delta_{recoil} histogram for %s at TT p_{T} ranges %d-%d && %d-%d GeV/c; p_{T}, #frac{GeV}{#it{c}}; Normalized per TT yield", trg[ig].Data(),
 						RType[ij].Data(),
 						trigRangeLow_1,
 						trigRanges.at(trigRangeLow_1),
@@ -150,8 +156,10 @@ void MakeDeltaRecoilSp(const Int_t& trigRangeLow_1, const Int_t& trigRangeLow_2)
 	DRJ_OO->GetXaxis()->SetRangeUser(20.,50.);
 	DRJ_OO->SetTitle("");
 
-	DRJ_OO->GetXaxis()->SetTitle("#it{p}_{T,jet}^{ch}");
-    DRJ_OO->GetYaxis()->SetTitle("#Delta_{recoil}");
+	DRJ_OO->GetXaxis()->SetTitle("#it{p}_{T,jet}^{ch}, #frac{GeV}{#it{c}}");
+    DRJ_OO->GetYaxis()->SetTitle("#Delta_{recoil}(#it{p}_{T,jet}^{ch}), #left( #frac{GeV}{#it{c}} #right)^{-1}");
+		DRJ_OO->SetTitleOffset(1.7, "y");
+		DRJ_OO->SetTitleOffset(1.7, "x");
 	(*DRJ_OO).Draw();
 	gStyle->SetOptStat(0);
 	gStyle->SetOptFit(0);
@@ -190,19 +198,35 @@ void MakeDeltaRecoilSp(const Int_t& trigRangeLow_1, const Int_t& trigRangeLow_2)
 	leg3->AddEntry((TF1*) fr2, "OO","l");
     leg3->Draw();
 
+		TLegend* leg_01 = new TLegend(0.2,0.25,0.45,0.4," ","brNDC");
+		leg_01->SetFillStyle(0);
+		leg_01->SetBorderSize(0);
+		leg_01->SetTextSize(0.05);
+	leg_01->AddEntry((TObject*) 0, "#frac{#Delta_{recoil}^{OO}(#it{p}_{T,jet}^{ch})}{#Delta_{recoil}^{pp}(#it{p}_{T,jet}^{ch})} = e^{- #frac{s#pm#Deltas}{b}}", "");
+		leg_01->Draw();
+
 	SavePNGandEPS(c1, 0);
 
+	gStyle->SetPadTopMargin(0.05);
+	gStyle->SetPadBottomMargin(0.15);
+	gStyle->SetPadLeftMargin(0.18);
+	gStyle->SetPadRightMargin(0.05);
+
 	name = Form("ratio_delta_recoil_rng_%d-%d", trigRangeLow_1, trigRangeLow_2);
-	TCanvas* c2 = new TCanvas("canv_recoil_ratio", name, 0., 0., 800., 800.);
+	TCanvas* c2 = new TCanvas("canv_recoil_ratio", name, 0., 0., 1000., 800.);
 	c2->cd(0);
 
 	TH1D* DRJ_ratio = new TH1D("DRJ_ratio", "", 200, -20, 180);
+	DRJ_ratio->GetXaxis()->SetTitle("#it{p}_{T,jet}^{ch}, #frac{GeV}{#it{c}}");
+	DRJ_ratio->GetYaxis()->SetTitle("#frac{#Delta_{recoil}^{OO}(#it{p}_{T,jet}^{ch})}{#Delta_{recoil}^{pp}(#it{p}_{T,jet}^{ch})}");
 	DRJ_ratio->SetDirectory(0);
 	DRJ_ratio->SetName("ratio");
 	DRJ_ratio->Divide(DRJ_OO, DRJ_pp, 1, 1);
 	DRJ_ratio->SetMarkerColor(4);
 	DRJ_ratio->SetLineColor(4);
 	DRJ_ratio->GetXaxis()->SetRangeUser(20., 50.);
+	DRJ_ratio->SetTitleOffset(2.1, "y");
+	DRJ_ratio->SetTitleOffset(1.7, "x");
 
 	TF1* const_form = new TF1("const_form", "[0]", 0, 180);
 	const_form->SetParName(0, "Ratio value");
@@ -229,7 +253,8 @@ void MakeDeltaRecoilSp(const Int_t& trigRangeLow_1, const Int_t& trigRangeLow_2)
 	gPad->Update();
 
 	TLegend *leg_ratio;
-	leg_ratio = new TLegend(0.1,0.8,0.85,0.9," ","brNDC");
+	leg_ratio = new TLegend(0.15,0.8,0.5,0.9," ","brNDC");
+	leg_ratio->SetTextSize(0.04);
 	leg_ratio->SetFillStyle(0); leg_ratio->SetBorderSize(0); leg_ratio->SetTextSize(0.03);
 	leg_ratio->AddEntry((TObject*) 0, "TT range = 6-7 && 12-20 GeV","");
 
